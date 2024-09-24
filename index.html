@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Sync Client</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
+</head>
+
+<body>
+    <h1>File Synchronization</h1>
+    <input type="file" id="fileInput" />
+    <button id="uploadButton">Upload File</button>
+    <div id="fileList">
+        <h3>Uploaded Files:</h3>
+    </div>
+    <script>
+        const socket = io();
+
+        // Emit the new_peer event with the socket ID
+        socket.emit('new_peer', { id: socket.id });
+
+        document.getElementById('uploadButton').onclick = function () {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.text())
+                .then(data => console.log(data));
+        };
+
+        // Listen for the file_uploaded event
+        socket.on('file_uploaded', function(data) {
+            console.log('File uploaded:', data.filename);
+            const fileUrl = window.location.origin + data.url;
+            console.log('File URL:', fileUrl);
+
+            // Create a link to the uploaded file
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.textContent = `Download ${data.filename}`;
+            link.target = '_blank'; // Open in a new tab
+            document.body.appendChild(link);
+            document.body.appendChild(document.createElement('br')); // Add a line break
+        });
+        function downloadFile(fileUrl) {
+            const a = document.createElement('a');
+            a.href = fileUrl;
+            a.download = fileUrl.split('/').pop(); // Use the file name as the download name
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        // Listen for new peers connecting
+        socket.on('new_peer', function (data) {
+            console.log('New peer connected:', data.id);
+        });
+    </script>
+</body>
+
+</html>
