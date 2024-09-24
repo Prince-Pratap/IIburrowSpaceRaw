@@ -50,4 +50,5 @@ def handle_new_peer(data):
         print("Received new peer connection without an ID.")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    socketio.run(app, host='0.0.0.0', port=port)
