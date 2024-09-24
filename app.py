@@ -51,4 +51,5 @@ def handle_new_peer(data):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    socketio.run(app, host='0.0.0.0', port=port)
+    # Allow unsafe Werkzeug usage in development (not recommended for production)
+    socketio.run(app, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
