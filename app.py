@@ -36,6 +36,11 @@ def upload_file():
 def serve_file(filename):
     return send_from_directory(sync_directory, filename)
 
+@app.route('/download/<filename>', methods=['GET'])
+def download_file(filename):
+    return send_from_directory(sync_directory, filename)
+
+
 @socketio.on('connect')
 def handle_connect():
     print('A user connected')
