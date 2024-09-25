@@ -16,7 +16,7 @@
         <h3>Uploaded Files:</h3>
     </div>
     <script>
-        const socket = io();
+        const socket = io('https://iiburrowspaceraw.onrender.com/');
 
         // Emit the new_peer event with the socket ID
         socket.emit('new_peer', { id: socket.id });
