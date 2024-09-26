@@ -10,6 +10,8 @@ sync_directory = 'sync_directory'
 if not os.path.exists(sync_directory):
     os.makedirs(sync_directory)
 
+local_server_url= 'https://2c40-117-250-76-240.ngrok-free.app'
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -24,7 +26,11 @@ def upload_file():
     file.save(os.path.join(sync_directory, file.filename))
     
     # Prepare the full file path to send to clients
-    file_url = f'/sync/{file.filename}'
+    file_url = f'https://2c40-117-250-76-240.ngrok-free.app/sync/{file.filename}'
+    try:
+        requests.post(local_server_url, json={'file_url': file_url})
+    except Exception as e:
+        print(f"Error notifying local server: {e}")
     
     # Notify other peers with the file path
     socketio.emit('file_uploaded', {'filename': file.filename, 'url': file_url})
